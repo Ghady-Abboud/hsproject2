@@ -52,7 +52,7 @@ function App() {
   return (
     <>
       <CssBaseline />
-      <Box minHeight={'100vh'} sx={{ backgroundColor: '#353535' }}>
+      <Box minHeight={'100vh'} sx={{ backgroundColor: '#FFEBC6' }}>
         <Container>
           {/* Top-Header */}
           <Box display='flex' alignItems='center' justifyContent='center' pt={4}>
