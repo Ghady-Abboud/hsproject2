@@ -128,9 +128,7 @@ function App() {
                 sx={{ marginRight: '10px' }}
                 onChange={(e) => {setNewItem(e.target.value)}}
               />
-              <Button variant='contained' onClick={AddItem}>
-                Add
-              </Button>
+              <Button variant='contained' onClick={AddItem}> Add </Button>
 
             </Box>
 
@@ -155,13 +153,13 @@ function App() {
                     color='info'
                     startIcon= {<Delete />}
                     sx = {{alignSelf: 'flex-end'}}
-                    onClick={ () => {
+                    onClick = {() => {
                       DeleteItem(item.id)
                     }}
                   />
                   </Box>
                 </StyledItem>
-              ))}
+              ))};
             </Stack>
 
           </Box>
