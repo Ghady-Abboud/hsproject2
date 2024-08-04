@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Container, CssBaseline, Typography, Box, Stack, styled, Paper, Button, TextField } from '@mui/material';
-import { MenuBook } from '@mui/icons-material';
+import { Delete, MenuBook} from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, onSnapshot, query, doc, addDoc, updateDoc, deleteDoc} from 'firebase/firestore';
+import EditIcon from '@mui/icons-material/Edit';
 import { db } from './firebase';
 
 function App() {
   const [items, setItems] = useState([]);
+  const [newItem, setNewItem] = useState('');
 
   const StyledItem = styled(Paper)(({ theme }) => ({
     backgroundColor: '#655560',
@@ -19,6 +21,8 @@ function App() {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
+    textWrap: 'wrap',
+    height: 'auto'
   }));
 
   const StyledLegend = styled('legend')(({ theme }) => ({
@@ -27,6 +31,16 @@ function App() {
     fontWeight: 'bold',
     padding: '0 10px',
   }));
+
+  // Create Item
+  const AddItem = async () => {
+    if (newItem.trim()) {
+      await addDoc(collection(db, "items"), {
+        text: newItem.trim(),
+      });
+      setNewItem('');
+    }
+  };
 
   // Read Items from Firestore
   useEffect(() => {
@@ -38,6 +52,23 @@ function App() {
 
     return () => unsubscribe();
   }, []);
+
+
+  // Update Items
+  const UpdateItem = async (id) => {
+    const updatedItemValue = prompt('Enter the new value');
+    if (updatedItemValue.trim()) {
+      const itemRef = doc(db, "items", id);
+      await updateDoc(itemRef, {
+        text: updatedItemValue
+      });
+    }
+  };
+
+  // Delete Items
+  const DeleteItem = async (id) => {
+    await deleteDoc(doc(db, "items", id));
+  }
 
   return (
     <>
@@ -74,7 +105,6 @@ function App() {
             mt={10}
             width={300}
             maxHeight={700}
-            overflow={'auto'}
             borderRadius={5}
             borderColor='#878C8F'
           >
@@ -96,10 +126,12 @@ function App() {
                 placeholder='Item Name'
                 color='primary'
                 sx={{ marginRight: '10px' }}
+                onChange={(e) => {setNewItem(e.target.value)}}
               />
-              <Button variant='contained'>
+              <Button variant='contained' onClick={AddItem}>
                 Add
               </Button>
+
             </Box>
 
             {/* Items List */}
@@ -107,6 +139,27 @@ function App() {
               {items.map(item => (
                 <StyledItem key={item.id}>
                   {item.text}
+                  <Box display={'flex'}>
+                  <Button
+                    title='Edit'
+                    color='info'
+                    startIcon={<EditIcon />}
+                    sx={{ alignSelf: 'flex-end'}}
+                    onClick={ () => {
+                      UpdateItem(item.id)
+                    }}
+                  />
+
+                  <Button
+                    title='Delete'
+                    color='info'
+                    startIcon= {<Delete />}
+                    sx = {{alignSelf: 'flex-end'}}
+                    onClick={ () => {
+                      DeleteItem(item.id)
+                    }}
+                  />
+                  </Box>
                 </StyledItem>
               ))}
             </Stack>
