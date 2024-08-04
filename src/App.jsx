@@ -1,11 +1,14 @@
-import { useState } from 'react';
-import { Container, CssBaseline, Typography, Box, Stack, styled, Paper, Button, IconButton, Tooltip, TextField } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Container, CssBaseline, Typography, Box, Stack, styled, Paper, Button, TextField } from '@mui/material';
 import { MenuBook } from '@mui/icons-material';
 import AddIcon from '@mui/icons-material/Add';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { collection, onSnapshot, query } from 'firebase/firestore';
+import { db } from './firebase';
 
 function App() {
-  const Item = styled(Paper)(({ theme }) => ({
+  const [items, setItems] = useState([]);
+
+  const StyledItem = styled(Paper)(({ theme }) => ({
     backgroundColor: '#655560',
     padding: theme.spacing(2),
     textAlign: 'center',
@@ -25,29 +28,16 @@ function App() {
     padding: '0 10px',
   }));
 
-  const [items, setItems] = useState([]);
-  const [newItem, setNewItem] = useState('');
-  const [showInput, setShowInput] = useState(false);
+  // Read Items from Firestore
+  useEffect(() => {
+    const q = query(collection(db, "items"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const itemsArr = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
+      setItems(itemsArr);
+    });
 
-  const handleAddItem = () => {
-    setShowInput(true);
-  };
-
-  const handleInputChange = (event) => {
-    setNewItem(event.target.value);
-  };
-
-  const handleAddItemToList = () => {
-    if (newItem.trim()) {
-      setItems([...items, newItem.trim()]);
-      setNewItem('');
-      setShowInput(false);
-    }
-  };
-
-  const handleRemoveItem = (index) => {
-    setItems(items.filter((_, i) => i !== index));
-  };
+    return () => unsubscribe();
+  }, []);
 
   return (
     <>
@@ -67,7 +57,7 @@ function App() {
               align='center'
               color='#878C8F'
               ml={'0.5em'}
-              fontFamily={'Wensley , Modern serif'}
+              fontFamily={'Wensley, Modern serif'}
               fontStyle='italic'
               fontWeight='bold'
             >
@@ -87,7 +77,6 @@ function App() {
             overflow={'auto'}
             borderRadius={5}
             borderColor='#878C8F'
-          
           >
             {/* Add Items Button */}
             <StyledLegend>Your List</StyledLegend>
@@ -96,45 +85,32 @@ function App() {
               color='primary'
               startIcon={<AddIcon />}
               sx={{ alignSelf: 'flex-end', marginBottom: '10px' }}
-              onClick={handleAddItem}
             >
               Add Item
             </Button>
 
             {/* Render the input field conditionally */}
-            {showInput && (
-              <Box display='flex' alignItems='center' mt={2}>
-                <TextField
-                  variant='outlined'
-                  placeholder='Item Name'
-                  value={newItem}
-                  color='primary'
-                  onChange={handleInputChange}
-                  sx={{ marginRight: '10px'}}
-                />
-                <Button variant='contained' onClick={handleAddItemToList}>
-                  Add
-                </Button>
-              </Box>
-            )}
+            <Box display='flex' alignItems='center' mt={2}>
+              <TextField
+                variant='outlined'
+                placeholder='Item Name'
+                color='primary'
+                sx={{ marginRight: '10px' }}
+              />
+              <Button variant='contained'>
+                Add
+              </Button>
+            </Box>
 
             {/* Items List */}
-            <Stack spacing={1} width={500}>
-              {items.map((item, index) => (
-                <Item key={index}>
-                  <span>{item}</span>
-                  <Tooltip title='Remove' placement='top'>
-                    <IconButton
-                      size='medium'
-                      color='error'
-                      onClick={() => handleRemoveItem(index)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </Item>
+            <Stack spacing={1} width={500} mt={2}>
+              {items.map(item => (
+                <StyledItem key={item.id}>
+                  {item.text}
+                </StyledItem>
               ))}
             </Stack>
+
           </Box>
         </Container>
       </Box>
