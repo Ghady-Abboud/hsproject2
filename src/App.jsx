@@ -20,9 +20,7 @@ function App() {
     fontSize: '24px',
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    textWrap: 'wrap',
-    height: 'auto'
+    alignItems: 'center'
   }));
 
   const StyledLegend = styled('legend')(({ theme }) => ({
@@ -110,17 +108,10 @@ function App() {
           >
             {/* Add Items Button */}
             <StyledLegend>Your List</StyledLegend>
-            <Button
-              variant='contained'
-              color='primary'
-              startIcon={<AddIcon />}
-              sx={{ alignSelf: 'flex-end', marginBottom: '10px' }}
-            >
-              Add Item
-            </Button>
+            
 
             {/* Render the input field conditionally */}
-            <Box display='flex' alignItems='center' mt={2}>
+            <Box margin={'0 auto'} mt={2}>
               <TextField
                 variant='outlined'
                 placeholder='Item Name'
@@ -128,7 +119,7 @@ function App() {
                 sx={{ marginRight: '10px' }}
                 onChange={(e) => {setNewItem(e.target.value)}}
               />
-              <Button variant='contained' onClick={AddItem}> Add </Button>
+              <Button variant='contained' onClick={AddItem} sx={{marginTop:'7px' }}> Add </Button>
 
             </Box>
 
