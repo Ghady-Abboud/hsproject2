@@ -149,8 +149,7 @@ function App() {
                 onClick={AddItem}
                 sx={{ marginTop: "7px" }}
               >
-                {" "}
-                Add{" "}
+                Add
               </Button>
             </Box>
 
@@ -182,7 +181,6 @@ function App() {
                   </Box>
                 </StyledItem>
               ))}
-              ;
             </Stack>
           </Box>
         </Container>
